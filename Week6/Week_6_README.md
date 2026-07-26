@@ -2,14 +2,14 @@
 
 This folder contains my Week 6 assignment based on Apache Spark.
 
-## 📌 Contents
+## Contents
 - Assignment_Report.docx → Final report with answers and outputs  
 - Spark_Code.ipynb → PySpark implementation  
 
-## 📊 Dataset
+## Dataset
 Olist E-commerce Dataset used for analysis.
 
-## 🚀 Topics Covered
+## Topics Covered
 - Spark Architecture  
 - Lazy Evaluation and DAG  
 - Transformations and Actions  
