@@ -1,0 +1,3 @@
+Customers: Removed 5 invalid emails
+Orders: Removed 25 rows with NULL customer_id
+Order Items: Removed 21 negative quantity rows
