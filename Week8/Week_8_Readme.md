@@ -12,21 +12,21 @@ Built an end-to-end eCommerce analytics system using SQL and Python.
 
 Folder Structure
 
-Ecommerce_Analytics
+Ecommerce_Analytics/
 │
-├── data
-│   ├── raw
-│   └── cleaned
+├── data/
+│ ├── raw/ # Raw generated datasets
+│ └── cleaned/ # Cleaned and processed data
 │
-├── scripts
-│   ├── generate_data.py
-│   ├── clean_data.py
-│   ├── cli_report.py
-|   ├── test_cases.py
+├── scripts/
+│ ├── generate_data.py # Script to generate synthetic data
+│ ├── clean_data.py # Data cleaning and validation
+│ ├── cli_report.py # Command-line reporting tool
+│ └── test_cases.py # Edge case testing
 │
-├── sql
-│   ├── schema.sql
-│   ├── queries.sql
+├── sql/
+│ ├── schema.sql # Database schema
+│ └── queries.sql # Analytical SQL queries
 │
-├── reports
-│   └── issues_report.txt
+├── reports/
+│ └── issues_report.txt # Data quality & analysis report
