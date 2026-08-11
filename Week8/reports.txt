@@ -1,0 +1,869 @@
+-- Part 3: SQL Analysis
+-- BASIC QUERIES
+
+--  Q1: Total revenue per category
+SELECT p.category,
+       SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS revenue
+FROM order_items oi
+JOIN products p ON oi.product_id = p.product_id
+GROUP BY p.category;
+
+category  -	revenue
+Books -	120463.186111
+Clothing -	90378.103748
+Electronics -	127416.971831
+Home -	117682.559725
+
+
+-- Q2: Top 10 customers by total order value
+SELECT o.customer_id,
+       SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS total_value
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.customer_id
+ORDER BY total_value DESC
+LIMIT 10;
+
+customer_id	total_value
+97.0	8586.047816
+458.0	7899.656821
+139.0	7380.259779
+440.0	5651.641704
+257.0	5616.600589
+395.0	5426.38544
+170.0	5230.438146
+262.0	4859.264562
+199.0	4701.827378
+480.0	4650.111198
+
+
+-- Q3: Month-wise order count (last 12 months)
+SELECT strftime('%Y-%m', order_date) AS month,
+       COUNT(*) AS order_count
+FROM orders
+WHERE order_date >= date('now', '-12 months')
+GROUP BY month
+ORDER BY month;
+
+month	order_count
+2026-01	61
+2026-02	48
+2026-03	58
+2026-04	75
+2026-05	61
+2026-06	50
+2026-07	65
+2026-08	26
+
+
+-- INTERMEDIATE QUERIES
+-- Q4: Customers who ordered but nothing delivered
+SELECT customer_id
+FROM orders
+GROUP BY customer_id
+HAVING SUM(CASE WHEN status = 'DELIVERED' THEN 1 ELSE 0 END) = 0;
+
+customer_id
+2.0
+5.0
+6.0
+7.0
+8.0
+9.0
+11.0
+13.0
+14.0
+16.0
+20.0
+21.0
+29.0
+31.0
+33.0
+36.0
+46.0
+48.0
+61.0
+64.0
+69.0
+72.0
+76.0
+77.0
+78.0
+80.0
+91.0
+94.0
+98.0
+99.0
+101.0
+106.0
+109.0
+112.0
+113.0
+114.0
+115.0
+116.0
+119.0
+120.0
+121.0
+124.0
+128.0
+129.0
+136.0
+137.0
+141.0
+144.0
+150.0
+151.0
+
+
+-- Q5: Products with more returns than purchases
+SELECT oi.product_id
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.order_id
+GROUP BY oi.product_id
+HAVING SUM(CASE WHEN o.status = 'RETURNED' THEN oi.quantity ELSE 0 END) >
+       SUM(CASE WHEN o.status != 'RETURNED' THEN oi.quantity ELSE 0 END);
+
+product_id
+3
+6
+23
+34
+43
+48
+49
+70
+76
+79
+80
+85
+92
+93
+103
+119
+124
+125
+149
+156
+158
+170
+180
+181
+187
+194
+206
+208
+213
+215
+218
+234
+246
+258
+269
+276
+284
+287
+302
+309
+310
+319
+322
+327
+339
+340
+352
+370
+372
+374
+
+-- Q6: Return rate per category
+SELECT p.category,
+       SUM(CASE WHEN o.status = 'RETURNED' THEN oi.quantity ELSE 0 END) * 1.0 /
+       SUM(oi.quantity) AS return_rate
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.order_id
+JOIN products p ON oi.product_id = p.product_id
+GROUP BY p.category;
+
+category	return_rate
+Books	0.196153846153846
+Clothing	0.17741935483871
+Electronics	0.249084249084249
+Home	0.184873949579832
+
+-- ADVANCED QUERIES
+-- Q7: Running total revenue per region
+SELECT region_code,
+       order_date,
+       daily_revenue,
+       SUM(daily_revenue) OVER (
+           PARTITION BY region_code 
+           ORDER BY order_date
+       ) AS running_total
+FROM (
+    SELECT o.region_code,
+           o.order_date,
+           SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS daily_revenue
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    GROUP BY o.region_code, o.order_date
+);
+
+region_code	order_date	daily_revenue	running_total
+EAST	NULL	8583.949162	8583.949162
+EAST	2026-01-01 23:02:15	669.52494	9253.474102
+EAST	2026-01-03 23:36:00	325.13674	9578.610842
+EAST	2026-01-05 11:12:56	854.973373	10433.584215
+EAST	2026-01-05 17:05:56	2278.516835	12712.10105
+EAST	2026-01-10 08:50:46	2132.146367	14844.247417
+EAST	2026-01-12 07:14:40	133.55976	14977.807177
+EAST	2026-01-16 01:55:46	1087.66203	16065.469207
+EAST	2026-01-25 00:37:48	549.65504	16615.124247
+EAST	2026-01-25 02:03:20	318.447963	16933.57221
+EAST	2026-02-06 11:57:56	372.933912	17306.506122
+EAST	2026-02-09 22:36:34	1189.661664	18496.167786
+EAST	2026-02-10 23:16:34	2360.98894	20857.156726
+EAST	2026-02-11 04:33:55	829.513288	21686.670014
+EAST	2026-02-23 06:50:49	942.377022	22629.047036
+EAST	2026-02-27 14:35:19	109.454004	22738.50104
+EAST	2026-03-02 14:05:43	961.457142	23699.958182
+EAST	2026-03-06 07:22:57	246.914397	23946.872579
+EAST	2026-03-06 14:27:03	1789.42548	25736.298059
+EAST	2026-03-08 06:23:09	2003.405598	27739.703657
+EAST	2026-03-08 10:30:30	1535.69645	29275.400107
+EAST	2026-03-09 08:29:47	1048.674526	30324.074633
+EAST	2026-03-15 10:37:17	539.87899	30863.953623
+EAST	2026-03-15 10:52:02	1198.817445	32062.771068
+EAST	2026-03-16 19:56:15	1718.259066	33781.030134
+EAST	2026-03-18 18:17:56	4098.422745	37879.452879
+EAST	2026-03-19 12:46:22	1447.610406	39327.063285
+EAST	2026-03-25 19:27:44	56.902236	39383.965521
+EAST	2026-03-28 14:39:55	261.562824	39645.528345
+EAST	2026-04-01 04:43:02	1476.299754	41121.828099
+EAST	2026-04-03 07:21:54	620.996096	41742.824195
+EAST	2026-04-03 18:25:13	280.1658	42022.989995
+EAST	2026-04-04 11:41:16	1862.14698	43885.136975
+EAST	2026-04-09 00:51:02	967.210632	44852.347607
+EAST	2026-04-09 13:18:12	926.28744	45778.635047
+EAST	2026-04-11 01:06:17	907.754558	46686.389605
+EAST	2026-04-13 07:40:51	882.05472	47568.444325
+EAST	2026-04-15 14:26:14	114.55603	47683.000355
+EAST	2026-04-16 13:15:24	1390.822515	49073.82287
+EAST	2026-04-22 14:16:04	271.970796	49345.793666
+EAST	2026-04-23 07:00:12	1210.906872	50556.700538
+EAST	2026-04-25 14:37:49	1240.347198	51797.047736
+EAST	2026-04-29 01:54:05	1004.583557	52801.631293
+EAST	2026-05-02 00:24:37	765.885844	53567.517137
+EAST	2026-05-02 09:12:23	1328.469678	54895.986815
+EAST	2026-05-03 08:21:28	1234.14576	56130.132575
+EAST	2026-05-04 21:08:37	426.414555	56556.54713
+EAST	2026-05-07 22:15:10	642.97296	57199.52009
+EAST	2026-05-08 09:55:09	274.06652	57473.58661
+EAST	2026-05-12 13:18:50	1421.95078	58895.53739
+
+-- Q8: Ranking products within category
+WITH revenue_data AS (
+    SELECT p.category,
+           p.product_name,
+           SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS total_revenue
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.product_id
+    GROUP BY p.category, p.product_name
+)
+SELECT *,
+       DENSE_RANK() OVER (PARTITION BY category ORDER BY total_revenue DESC) AS rank_in_category
+FROM revenue_data;
+
+category	product_name	total_revenue	rank_in_category
+Books	First	5254.627056	1
+Books	True	4638.04008	2
+Books	Life	3615.204746	3
+Books	Sound	3546.861434	4
+Books	Special	3506.464135	5
+Books	Example	3470.170988	6
+Books	Nation	2964.58485	7
+Books	Machine	2836.188694	8
+Books	Nor	2775.399363	9
+Books	Try	2642.251361	10
+Books	Nice	2394.196408	11
+Books	Nothing	2392.87959	12
+Books	I	2291.967735	13
+Books	Crime	2170.487574	14
+Books	Nature	2161.611528	15
+Books	Main	2139.763094	16
+Books	Focus	2123.35428	17
+Books	Discover	2115.24784	18
+Books	Enough	2016.533445	19
+Books	Voice	1978.487587	20
+Books	Energy	1913.561472	21
+Books	Space	1852.819735	22
+Books	Grow	1814.177624	23
+Books	Director	1784.080261	24
+Books	Clear	1766.415828	25
+Books	Thousand	1747.11519	26
+Books	Not	1684.09957	27
+Books	Go	1654.01	28
+Books	She	1622.757653	29
+Books	These	1585.681175	30
+Books	Even	1536.419768	31
+Books	Ten	1526.306553	32
+Books	Whole	1517.88966	33
+Books	Hundred	1494.257736	34
+Books	Big	1468.805051	35
+Books	Agency	1450.758772	36
+Books	Foreign	1442.869385	37
+Books	Keep	1430.69647	38
+Books	On	1336.560391	39
+Books	Must	1305.594564	40
+Books	Begin	1305.292592	41
+Books	Through	1291.16304	42
+Books	Heart	1258.647104	43
+Books	Themselves	1207.90756	44
+Books	Professional	1169.2126	45
+Books	Represent	1151.864064	46
+Books	Safe	1088.213415	47
+Books	Us	1048.40568	48
+Books	Industry	1032.019953	49
+Books	Interest	1029.112888	50
+
+-- Q9: LAG — Days between orders
+SELECT customer_id,
+       order_date,
+       LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date) AS prev_date,
+       JULIANDAY(order_date) - JULIANDAY(LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date)) AS days_gap,
+       CASE 
+           WHEN JULIANDAY(order_date) - JULIANDAY(LAG(order_date) OVER (PARTITION BY customer_id ORDER BY order_date)) > 30
+           THEN 'At Risk'
+           ELSE 'Normal'
+       END AS risk_flag
+FROM orders;
+
+customer_id	order_date	prev_date	days_gap	risk_flag
+2.0	2026-07-04 08:03:33	NULL	NULL	Normal
+5.0	2026-01-13 16:08:59	NULL	NULL	Normal
+6.0	2026-05-26 03:58:26	NULL	NULL	Normal
+7.0	2026-03-09 08:29:47	NULL	NULL	Normal
+8.0	2026-01-25 02:38:59	NULL	NULL	Normal
+9.0	2026-02-09 22:36:34	NULL	NULL	Normal
+9.0	2026-04-23 07:12:35	2026-02-09 22:36:34	72.3583449074067	At Risk
+11.0	NULL	NULL	NULL	Normal
+13.0	2026-03-27 11:25:32	NULL	NULL	Normal
+14.0	2026-06-11 13:01:57	NULL	NULL	Normal
+15.0	2026-04-05 16:33:44	NULL	NULL	Normal
+15.0	2026-04-15 14:26:14	2026-04-05 16:33:44	9.91145833348855	Normal
+16.0	2026-03-18 18:17:56	NULL	NULL	Normal
+20.0	2026-05-09 06:05:09	NULL	NULL	Normal
+21.0	2026-06-02 13:29:19	NULL	NULL	Normal
+26.0	2026-02-22 23:04:58	NULL	NULL	Normal
+29.0	NULL	NULL	NULL	Normal
+30.0	NULL	NULL	NULL	Normal
+30.0	NULL	NULL	NULL	Normal
+31.0	2026-02-23 06:50:49	NULL	NULL	Normal
+31.0	2026-04-02 15:08:15	2026-02-23 06:50:49	38.3454398149624	At Risk
+33.0	NULL	NULL	NULL	Normal
+33.0	2026-08-04 15:44:41	NULL	NULL	Normal
+36.0	2026-08-05 20:12:32	NULL	NULL	Normal
+37.0	2026-01-29 18:36:58	NULL	NULL	Normal
+39.0	2026-05-15 22:49:33	NULL	NULL	Normal
+41.0	2026-06-05 12:09:35	NULL	NULL	Normal
+42.0	2026-05-04 22:46:11	NULL	NULL	Normal
+42.0	2026-07-09 02:31:32	2026-05-04 22:46:11	65.1564930556342	At Risk
+44.0	2026-06-13 12:15:51	NULL	NULL	Normal
+46.0	2026-03-22 21:03:34	NULL	NULL	Normal
+46.0	2026-04-25 04:40:06	2026-03-22 21:03:34	33.3170370371081	At Risk
+46.0	2026-06-04 22:18:00	2026-04-25 04:40:06	40.7346527776681	At Risk
+46.0	2026-06-14 16:28:01	2026-06-04 22:18:00	9.75695601850748	Normal
+47.0	2026-04-02 08:30:07	NULL	NULL	Normal
+47.0	2026-04-03 07:21:54	2026-04-02 08:30:07	0.952627314720303	Normal
+47.0	2026-07-11 01:44:35	2026-04-03 07:21:54	98.7657523150556	At Risk
+48.0	2026-06-01 02:57:59	NULL	NULL	Normal
+52.0	2026-01-12 07:14:40	NULL	NULL	Normal
+61.0	2026-06-04 08:08:05	NULL	NULL	Normal
+64.0	2026-03-15 14:56:27	NULL	NULL	Normal
+68.0	2026-01-05 17:05:56	NULL	NULL	Normal
+68.0	2026-03-31 21:09:30	2026-01-05 17:05:56	85.169143518433	At Risk
+69.0	2026-03-03 16:33:40	NULL	NULL	Normal
+69.0	2026-04-21 22:08:40	2026-03-03 16:33:40	49.2326388885267	At Risk
+72.0	2026-07-28 19:06:21	NULL	NULL	Normal
+74.0	2026-03-15 10:37:17	NULL	NULL	Normal
+74.0	2026-04-07 22:00:24	2026-03-15 10:37:17	23.4743865742348	Normal
+76.0	2026-04-15 19:13:14	NULL	NULL	Normal
+76.0	2026-06-16 19:39:11	2026-04-15 19:13:14	62.0180208333768	At Risk
+
+
+-- Q10: Customer segmentation (CTE)
+WITH monthly AS (
+    SELECT o.customer_id,
+           strftime('%Y-%m', o.order_date) AS month,
+           SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS revenue
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    GROUP BY o.customer_id, month
+)
+SELECT month,
+       CASE 
+           WHEN revenue > 10000 THEN 'High'
+           WHEN revenue BETWEEN 5000 AND 10000 THEN 'Medium'
+           ELSE 'Low'
+       END AS segment,
+       COUNT(DISTINCT customer_id) AS customer_count
+FROM monthly
+GROUP BY month, segment;
+
+month	segment	customer_count
+NULL	Low	23
+2026-01	Low	45
+2026-02	Low	33
+2026-03	Low	39
+2026-03	Medium	1
+2026-04	Low	52
+2026-05	Low	48
+2026-06	Low	29
+2026-06	Medium	1
+2026-07	Low	46
+2026-07	Medium	1
+2026-08	Low	21
+
+
+-- Q11: NTILE (quartiles)
+WITH customer_value AS (
+    SELECT o.customer_id,
+           SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent/100)) AS total_value
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    GROUP BY o.customer_id
+)
+SELECT *,
+       NTILE(4) OVER (ORDER BY total_value DESC) AS quartile,
+       CASE 
+           WHEN NTILE(4) OVER (ORDER BY total_value DESC) = 1 THEN 'Platinum'
+           WHEN NTILE(4) OVER (ORDER BY total_value DESC) = 2 THEN 'Gold'
+           WHEN NTILE(4) OVER (ORDER BY total_value DESC) = 3 THEN 'Silver'
+           ELSE 'Bronze'
+       END AS quartile_label
+FROM customer_value;
+
+customer_id	total_value	quartile	quartile_label
+97.0	8586.047816	1	Platinum
+458.0	7899.656821	1	Platinum
+139.0	7380.259779	1	Platinum
+440.0	5651.641704	1	Platinum
+257.0	5616.600589	1	Platinum
+395.0	5426.38544	1	Platinum
+170.0	5230.438146	1	Platinum
+262.0	4859.264562	1	Platinum
+199.0	4701.827378	1	Platinum
+480.0	4650.111198	1	Platinum
+122.0	4449.129574	1	Platinum
+428.0	4399.100066	1	Platinum
+168.0	4357.16426	1	Platinum
+308.0	4282.565049	1	Platinum
+91.0	4188.454647	1	Platinum
+80.0	4158.737895	1	Platinum
+46.0	4109.204812	1	Platinum
+16.0	4098.422745	1	Platinum
+348.0	4074.03085	1	Platinum
+232.0	4019.056698	1	Platinum
+341.0	4015.354056	1	Platinum
+284.0	3860.116348	1	Platinum
+236.0	3819.095544	1	Platinum
+407.0	3715.77307	1	Platinum
+369.0	3654.213135	1	Platinum
+462.0	3527.73057	1	Platinum
+140.0	3525.601302	1	Platinum
+424.0	3478.598724	1	Platinum
+302.0	3421.3481	1	Platinum
+164.0	3411.01443	1	Platinum
+205.0	3377.375506	1	Platinum
+165.0	3360.51806	1	Platinum
+359.0	3357.618458	1	Platinum
+301.0	3341.697915	1	Platinum
+309.0	3332.130338	1	Platinum
+160.0	3299.134897	1	Platinum
+365.0	3291.174021	1	Platinum
+185.0	3287.922446	1	Platinum
+61.0	3258.790786	1	Platinum
+167.0	3228.159519	1	Platinum
+466.0	3203.694358	1	Platinum
+347.0	3159.820631	1	Platinum
+47.0	3089.989245	1	Platinum
+224.0	2980.341813	1	Platinum
+485.0	2969.890253	1	Platinum
+379.0	2832.917015	1	Platinum
+465.0	2759.51913	1	Platinum
+427.0	2749.011052	1	Platinum
+226.0	2688.939617	1	Platinum
+116.0	2682.694876	1	Platinum
+
+
+-- Q12: Year-over-Year Growth
+WITH monthly AS (
+    SELECT 
+        strftime('%Y', o.order_date) AS year,
+        strftime('%m', o.order_date) AS month,
+        SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent / 100)) AS revenue
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    GROUP BY year, month
+)
+
+SELECT 
+    m1.year,
+    m1.month,
+    m1.revenue,
+    m2.revenue AS prev_year_revenue,
+    CASE 
+        WHEN m2.revenue IS NULL THEN NULL
+        ELSE ROUND((m1.revenue - m2.revenue) * 100.0 / m2.revenue, 2)
+    END AS yoy_growth_percent
+FROM monthly m1
+LEFT JOIN monthly m2
+    ON m1.month = m2.month
+   AND m1.year = CAST(m2.year AS INTEGER) + 1
+ORDER BY m1.year, m1.month;
+
+year	month	revenue	prev_year_revenue	yoy_growth_percent
+NULL	NULL	26827.875763	NULL	NULL
+2026	01	68957.628759	NULL	NULL
+2026	02	35101.269671	NULL	NULL
+2026	03	54254.09659	NULL	NULL
+2026	04	59611.28276	NULL	NULL
+2026	05	50883.739188	NULL	NULL
+2026	06	44164.373945	NULL	NULL
+2026	07	60482.079734	NULL	NULL
+2026	08	26267.981046	NULL	NULL
+
+-- Q13: First & Last Category
+WITH customer_orders AS (
+    SELECT 
+        o.customer_id,
+        o.order_date,
+        p.category
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+)
+
+SELECT DISTINCT
+    customer_id,
+    FIRST_VALUE(category) OVER (
+        PARTITION BY customer_id 
+        ORDER BY order_date
+    ) AS first_category,
+
+    LAST_VALUE(category) OVER (
+        PARTITION BY customer_id 
+        ORDER BY order_date
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) AS last_category,
+
+    CASE 
+        WHEN FIRST_VALUE(category) OVER (
+            PARTITION BY customer_id ORDER BY order_date
+        ) 
+        =
+        LAST_VALUE(category) OVER (
+            PARTITION BY customer_id ORDER BY order_date
+            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+        )
+        THEN 'No'
+        ELSE 'Yes'
+    END AS category_shift
+FROM customer_orders;
+
+
+customer_id	first_category	last_category	category_shift
+2.0	Books	Electronics	Yes
+6.0	Home	Electronics	Yes
+7.0	Clothing	Clothing	No
+8.0	Books	Books	No
+9.0	Books	Electronics	Yes
+11.0	Books	Books	No
+13.0	Electronics	Electronics	No
+14.0	Home	Home	No
+15.0	Electronics	Electronics	No
+16.0	Clothing	Books	Yes
+30.0	Books	Clothing	Yes
+31.0	Home	Clothing	Yes
+36.0	Home	Home	No
+39.0	Books	Books	No
+41.0	Electronics	Electronics	No
+42.0	Electronics	Electronics	No
+46.0	Home	Home	No
+47.0	Electronics	Home	Yes
+48.0	Home	Clothing	Yes
+52.0	Clothing	Clothing	No
+61.0	Electronics	Home	Yes
+68.0	Clothing	Home	Yes
+69.0	Books	Books	No
+72.0	Books	Books	No
+74.0	Books	Books	No
+76.0	Electronics	Electronics	No
+78.0	Home	Clothing	Yes
+80.0	Electronics	Books	Yes
+84.0	Books	Electronics	Yes
+87.0	Clothing	Clothing	No
+89.0	Clothing	Home	Yes
+91.0	Books	Electronics	Yes
+92.0	Clothing	Clothing	No
+96.0	Books	Electronics	Yes
+97.0	Books	Electronics	Yes
+98.0	Books	Clothing	Yes
+99.0	Books	Home	Yes
+106.0	Electronics	Books	Yes
+109.0	Books	Books	No
+112.0	Electronics	Electronics	No
+114.0	Books	Electronics	Yes
+116.0	Home	Home	No
+119.0	Home	Electronics	Yes
+120.0	Clothing	Books	Yes
+121.0	Electronics	Electronics	No
+122.0	Books	Electronics	Yes
+124.0	Books	Electronics	Yes
+127.0	Clothing	Home	Yes
+128.0	Clothing	Clothing	No
+129.0	Electronics	Home	Yes
+
+-- Q14: Cumulative revenue %
+WITH customer_revenue AS (
+    SELECT 
+        o.customer_id,
+        SUM(oi.quantity * oi.unit_price * (1 - oi.discount_percent / 100)) AS revenue
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    GROUP BY o.customer_id
+)
+
+SELECT 
+    customer_id,
+    revenue,
+    SUM(revenue) OVER (ORDER BY revenue DESC) AS cumulative_revenue,
+    ROUND(
+        SUM(revenue) OVER (ORDER BY revenue DESC) * 100.0 /
+        SUM(revenue) OVER (), 
+    2) AS cumulative_percent
+FROM customer_revenue
+ORDER BY revenue DESC;
+
+customer_id	revenue	cumulative_revenue	cumulative_percent
+97.0	8586.047816	8586.047816	2.01
+458.0	7899.656821	16485.704637	3.86
+139.0	7380.259779	23865.964416	5.6
+440.0	5651.641704	29517.60612	6.92
+257.0	5616.600589	35134.206709	8.24
+395.0	5426.38544	40560.592149	9.51
+170.0	5230.438146	45791.030295	10.74
+262.0	4859.264562	50650.294857	11.87
+199.0	4701.827378	55352.122235	12.98
+480.0	4650.111198	60002.233433	14.07
+122.0	4449.129574	64451.363007	15.11
+428.0	4399.100066	68850.463073	16.14
+168.0	4357.16426	73207.627333	17.16
+308.0	4282.565049	77490.192382	18.17
+91.0	4188.454647	81678.647029	19.15
+80.0	4158.737895	85837.384924	20.12
+46.0	4109.204812	89946.589736	21.09
+16.0	4098.422745	94045.012481	22.05
+348.0	4074.03085	98119.043331	23.0
+232.0	4019.056698	102138.100029	23.95
+341.0	4015.354056	106153.454085	24.89
+284.0	3860.116348	110013.570433	25.79
+236.0	3819.095544	113832.665977	26.69
+407.0	3715.77307	117548.439047	27.56
+369.0	3654.213135	121202.652182	28.41
+462.0	3527.73057	124730.382752	29.24
+140.0	3525.601302	128255.984054	30.07
+424.0	3478.598724	131734.582778	30.88
+302.0	3421.3481	135155.930878	31.69
+164.0	3411.01443	138566.945308	32.49
+205.0	3377.375506	141944.320814	33.28
+165.0	3360.51806	145304.838874	34.07
+359.0	3357.618458	148662.457332	34.85
+301.0	3341.697915	152004.155247	35.64
+309.0	3332.130338	155336.285585	36.42
+160.0	3299.134897	158635.420482	37.19
+365.0	3291.174021	161926.594503	37.96
+185.0	3287.922446	165214.516949	38.73
+61.0	3258.790786	168473.307735	39.5
+167.0	3228.159519	171701.467254	40.25
+466.0	3203.694358	174905.161612	41.0
+347.0	3159.820631	178064.982243	41.75
+47.0	3089.989245	181154.971488	42.47
+224.0	2980.341813	184135.313301	43.17
+485.0	2969.890253	187105.203554	43.86
+379.0	2832.917015	189938.120569	44.53
+465.0	2759.51913	192697.639699	45.18
+427.0	2749.011052	195446.650751	45.82
+226.0	2688.939617	198135.590368	46.45
+116.0	2682.694876	200818.285244	47.08
+
+
+-- Q15: Cohort Analysis (simplified)
+WITH customer_cohort AS (
+    SELECT 
+        customer_id,
+        strftime('%Y-%m', registration_date) AS cohort_month
+    FROM customers
+),
+
+orders_data AS (
+    SELECT 
+        o.customer_id,
+        strftime('%Y-%m', o.order_date) AS order_month
+    FROM orders o
+),
+
+cohort_activity AS (
+    SELECT 
+        c.cohort_month,
+        o.order_month,
+        c.customer_id,
+        (CAST(strftime('%Y', o.order_month) AS INTEGER) - 
+         CAST(strftime('%Y', c.cohort_month) AS INTEGER)) * 12 +
+        (CAST(strftime('%m', o.order_month) AS INTEGER) - 
+         CAST(strftime('%m', c.cohort_month) AS INTEGER)) 
+        AS month_number
+    FROM customer_cohort c
+    JOIN orders_data o 
+        ON c.customer_id = o.customer_id
+)
+
+SELECT 
+    cohort_month,
+    month_number,
+    COUNT(DISTINCT customer_id) AS active_customers
+FROM cohort_activity
+GROUP BY cohort_month, month_number
+ORDER BY cohort_month, month_number;
+
+cohort_month	month_number	active_customers
+2020-01	NULL	2
+2020-02	NULL	1
+2020-03	NULL	8
+2020-04	NULL	3
+2020-05	NULL	6
+2020-07	NULL	2
+2020-08	NULL	6
+2020-09	NULL	1
+2020-10	NULL	2
+2020-11	NULL	2
+2020-12	NULL	5
+2021-01	NULL	7
+2021-02	NULL	5
+2021-03	NULL	4
+2021-04	NULL	2
+2021-05	NULL	4
+2021-06	NULL	7
+2021-08	NULL	2
+2021-09	NULL	3
+2021-10	NULL	2
+2021-11	NULL	1
+2021-12	NULL	7
+2022-01	NULL	4
+2022-02	NULL	6
+2022-03	NULL	8
+2022-04	NULL	4
+2022-05	NULL	3
+2022-06	NULL	6
+2022-07	NULL	3
+2022-08	NULL	4
+2022-09	NULL	4
+2022-10	NULL	7
+2022-11	NULL	6
+2022-12	NULL	5
+2023-01	NULL	6
+2023-02	NULL	1
+2023-03	NULL	5
+2023-04	NULL	1
+2023-05	NULL	3
+2023-06	NULL	4
+2023-07	NULL	8
+2023-08	NULL	6
+2023-09	NULL	4
+2023-10	NULL	3
+2023-11	NULL	3
+2023-12	NULL	2
+2024-01	NULL	3
+2024-02	NULL	3
+2024-03	NULL	3
+2024-04	NULL	3
+
+
+-- Q16: Frequently bought together
+SELECT a.product_id AS product_a,
+       b.product_id AS product_b,
+       COUNT(*) AS times
+FROM order_items a
+JOIN order_items b
+ON a.order_id = b.order_id AND a.product_id < b.product_id
+GROUP BY product_a, product_b
+ORDER BY times DESC;
+
+product_a	product_b	times
+23	89	2
+3	35	1
+3	320	1
+4	65	1
+4	139	1
+4	326	1
+4	386	1
+4	467	1
+5	490	1
+6	396	1
+7	63	1
+7	433	1
+7	458	1
+8	30	1
+8	149	1
+8	182	1
+8	318	1
+8	401	1
+8	465	1
+8	467	1
+11	15	1
+11	46	1
+11	116	1
+11	282	1
+11	393	1
+13	16	1
+13	67	1
+13	324	1
+13	354	1
+15	258	1
+17	238	1
+18	142	1
+18	315	1
+20	143	1
+20	222	1
+22	152	1
+22	351	1
+23	66	1
+23	70	1
+23	129	1
+23	227	1
+23	444	1
+23	460	1
+23	473	1
+23	480	1
+23	497	1
+24	159	1
+24	357	1
+25	39	1
+25	60	1
+
+
+
+
+Part 4: Python + SQL Integration
+Built a command-line tool using sqlite3
+Accepted user input for report type and date range
+Generated summary metrics: total orders, revenue, unique customers
+Identified top 3 selling products
+Compared results with previous period using percentage change
+
+
+Part 5: Edge Case Handling
+Verified no invalid order_id references in order_items
+Checked for discounts greater than 100%
+Ensured no records with zero quantity
+Validated that no orders exist with future dates
