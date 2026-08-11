@@ -1,0 +1,94 @@
+patient_id,patient_name,age,age_group,gender,comorbidity_index,total_admissions,total_readmissions,readmission_rate_pct,avg_length_of_stay,prior_admission_count,risk_score,risk_category
+P00061,Urvashi Ray,69,Elderly,F,High,3,2,66.67,6.67,2,83.34,High
+P00202,Gayathri Balakrishnan,65,Senior,F,High,3,2,66.67,8,2,83.34,High
+P00031,Theodore Devi,85,Elderly,M,High,6,4,66.67,3.83,5,83.34,High
+P00165,Osha Ramachandran,85,Elderly,M,High,5,3,60,8,4,80,High
+P00113,Nitara Bakshi,92,Elderly,F,High,5,3,60,8.2,4,80,High
+P00169,Vinaya Kanda,69,Elderly,M,High,7,4,57.14,5.43,6,78.57,High
+P00123,Ayaan D’Alia,54,Senior,M,High,3,2,66.67,8.33,2,78.34,High
+P00017,Fariq Kaul,59,Senior,F,High,3,2,66.67,6,2,78.34,High
+P00106,Faqid Dixit,79,Elderly,M,Moderate,3,2,66.67,7,2,76.34,High
+P00004,Ayushman Chander,92,Elderly,F,Moderate,3,2,66.67,6,2,76.34,High
+P00029,Liam Koshy,84,Elderly,M,Moderate,3,2,66.67,6.67,2,76.34,High
+P00099,Baghyawati Kade,83,Elderly,OTHER,High,4,2,50,5.75,3,75,High
+P00114,Gaurangi Sabharwal,59,Senior,F,High,5,3,60,5,4,75,High
+P00085,Yatin Baral,70,Elderly,OTHER,High,4,2,50,5.25,3,75,High
+P00205,Harini Mammen,90,Elderly,M,High,4,2,50,8.5,3,75,High
+P00078,Mohammed Gupta,84,Elderly,M,Low,2,2,100,7,1,75,High
+P00178,Geetika Raghavan,69,Elderly,F,High,5,2,40,6.8,4,70,High
+P00192,Idika Walia,50,Middle Age,M,High,4,2,50,7.75,3,70,High
+P00110,Shivansh Krish,57,Senior,M,High,4,2,50,6.5,3,70,High
+P00046,Farhan Chada,73,Elderly,M,High,5,2,40,4.8,4,70,High
+P00161,Vihaan Rajagopal,42,Middle Age,M,High,3,2,66.67,5,2,68.34,High
+P00077,Bhavika Sampath,87,Elderly,M,Moderate,4,2,50,4.5,3,68,High
+P00155,Shivani Lad,77,Elderly,F,High,6,2,33.33,9.17,5,66.66,High
+P00092,Tanay Toor,65,Senior,F,High,3,1,33.33,4,2,66.66,High
+P00047,Ekapad Walia,93,Elderly,M,High,6,2,33.33,6.5,5,66.66,High
+P00204,Simon Pant,90,Elderly,F,High,3,1,33.33,5.67,2,66.66,High
+P00091,Tara Chaudhry,72,Elderly,F,High,6,2,33.33,7,5,66.66,High
+P00117,Tristan Iyengar,84,Elderly,M,High,3,1,33.33,3.67,2,66.66,High
+P00069,Arya Shere,69,Elderly,M,High,3,1,33.33,4.67,2,66.66,High
+P00081,Vansha Thakkar,73,Elderly,F,High,6,2,33.33,3.67,5,66.66,High
+P00054,Devansh Nigam,70,Elderly,M,High,3,1,33.33,4.67,2,66.66,High
+P00170,Rajata Sunder,84,Elderly,F,Low,1,1,100,5,0,65,High
+P00038,Radhika Dugar,54,Senior,M,High,5,2,40,6.6,4,65,High
+P00042,Kashvi Edwin,83,Elderly,F,Low,1,1,100,10,0,65,High
+P00147,Warda Ratta,95,Elderly,M,High,4,1,25,4.5,3,62.5,High
+P00200,Gabriel Mallick,74,Elderly,M,High,4,1,25,3.5,3,62.5,High
+P00088,William Lanka,75,Elderly,M,High,4,1,25,7.25,3,62.5,High
+P00032,Gavin Batta,95,Elderly,F,High,8,2,25,5.25,7,62.5,High
+P00097,Krish Lalla,83,Elderly,F,High,4,1,25,4.75,3,62.5,High
+P00194,Advik Salvi,74,Elderly,F,High,4,1,25,5.25,3,62.5,High
+P00094,Yash Pingle,92,Elderly,M,High,4,1,25,8.25,3,62.5,High
+P00162,Tanish Bhatt,73,Elderly,F,High,4,1,25,3.75,3,62.5,High
+P00027,Simon Tata,71,Elderly,F,High,4,1,25,5.75,3,62.5,High
+P00096,Abhiram Mistry,55,Senior,F,High,6,2,33.33,6,5,61.67,High
+P00015,Janaki Handa,62,Senior,F,High,3,1,33.33,6.67,2,61.67,High
+P00087,Advika Jayaraman,31,Young Adult,M,High,4,2,50,6.75,3,60,High
+P00183,Ryan Bahri,28,Young Adult,M,High,6,3,50,9.33,5,60,High
+P00184,William Date,40,Middle Age,M,High,4,2,50,9.5,3,60,High
+P00158,Faras Mangal,37,Middle Age,M,High,4,2,50,3.75,3,60,High
+P00014,Kritika Brar,43,Middle Age,F,High,4,2,50,7,3,60,High
+P00090,Diya Bora,89,Elderly,F,Moderate,3,1,33.33,3.33,2,59.67,High
+P00129,Zinal Yohannan,59,Senior,M,High,7,2,28.57,6.86,6,59.29,High
+P00201,Yagnesh Shetty,60,Senior,M,High,7,2,28.57,4.57,6,59.29,High
+P00098,Hredhaan Dugal,83,Elderly,M,Moderate,2,1,50,4,1,58,High
+P00141,Frado Mander,65,Senior,F,Moderate,2,1,50,6.5,1,58,High
+P00150,Zarna Shetty,66,Elderly,M,Moderate,2,1,50,4.5,1,58,High
+P00143,Umang Issac,88,Elderly,M,Moderate,2,1,50,5.5,1,58,High
+P00196,Tripti Dua,68,Elderly,F,Moderate,2,1,50,4.5,1,58,High
+P00159,Anita Nayak,82,Elderly,F,Moderate,2,1,50,4.5,1,58,High
+P00127,Lekha Gupta,82,Elderly,M,Moderate,2,1,50,5,1,58,High
+P00151,Zaid Dara,54,Senior,F,High,4,1,25,5.5,3,57.5,High
+P00048,Kabir Soman,57,Senior,M,High,4,1,25,6.5,3,57.5,High
+P00122,Yashodhara Ratta,65,Senior,F,High,7,1,14.29,6.29,6,57.14,High
+P00137,Daksha Mangat,80,Elderly,F,High,7,1,14.29,6.14,6,57.14,High
+P00071,Chandresh Zachariah,51,Senior,F,High,9,2,22.22,4.56,8,56.11,High
+P00101,Zayan Behl,78,Elderly,F,Moderate,4,1,25,5,3,55.5,High
+P00197,Patrick Vig,39,Middle Age,M,High,5,2,40,9.4,4,55,High
+P00012,Hemangini Lalla,43,Middle Age,M,High,5,2,40,5.2,4,55,High
+P00010,Gayathri Chaudry,59,Senior,M,High,5,1,20,6.8,4,55,High
+P00167,Indira Misra,56,Senior,M,High,5,1,20,7,4,55,High
+P00146,Oeshi Hayer,60,Senior,F,High,5,1,20,5.4,4,55,High
+P00109,Janya Baral,59,Senior,M,High,6,1,16.67,6.83,5,53.34,High
+P00003,Gagan Sami,56,Senior,M,High,6,1,16.67,6.83,5,53.34,High
+P00111,Irya Ray,57,Senior,F,Moderate,2,1,50,6,1,53,High
+P00001,Aryan Maharaj,61,Senior,M,Moderate,2,1,50,4.5,1,53,High
+P00115,Amara Dutta,57,Senior,F,Moderate,2,1,50,4,1,53,High
+P00199,Amrita Naidu,40,Middle Age,OTHER,High,3,1,33.33,7.67,2,51.67,High
+P00013,Tripti Yadav,35,Young Adult,M,High,3,1,33.33,5.33,2,51.67,High
+P00188,Hritik Bal,35,Young Adult,M,High,6,2,33.33,3.33,5,51.67,High
+P00171,Lopa Nayar,40,Middle Age,M,High,3,1,33.33,7.33,2,51.67,High
+P00028,Tara Dhar,5,Pediatric,M,High,3,1,33.33,5.67,2,51.67,High
+P00124,Pranav Lanka,45,Middle Age,M,High,3,1,33.33,9,2,51.67,High
+P00007,Saumya Mall,53,Senior,M,Moderate,4,1,25,5.5,3,50.5,High
+P00132,Charita Tripathi,53,Senior,M,Moderate,4,1,25,6,3,50.5,High
+P00064,Unni Bhagat,76,Elderly,F,High,3,0,0,5.67,2,50,High
+P00053,Jai Kota,83,Elderly,M,High,5,0,0,5,4,50,High
+P00173,Avi Ramesh,89,Elderly,M,High,3,0,0,8.33,2,50,High
+P00066,Ikbal Kothari,68,Elderly,M,High,5,0,0,4.2,4,50,High
+P00181,Inaya Kapur,65,Senior,F,High,4,0,0,6.75,3,50,High
+P00203,Ekta Gopal,31,Young Adult,M,Low,1,1,100,2,0,50,High
+P00023,Anamika Kanda,35,Young Adult,F,Low,1,1,100,4,0,50,High
+P00076,Madhavi Lanka,75,Elderly,M,High,3,0,0,6,2,50,High
+P00160,Faris Devi,79,Elderly,F,High,3,0,0,4.33,2,50,High

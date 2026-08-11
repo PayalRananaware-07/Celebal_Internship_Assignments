@@ -1,0 +1,10 @@
+diagnosis_category,total_admissions,readmissions,readmission_rate_pct,avg_length_of_stay
+Respiratory,115,33,28.7,5.76
+Cardiovascular,113,32,28.32,5.67
+Nephrology,46,11,23.91,6.28
+Oncology,122,29,23.77,6.43
+Infectious,53,11,20.75,6.43
+Orthopedics,58,12,20.69,6.6
+Endocrine,64,13,20.31,3.81
+Neurology,63,11,17.46,6.92
+General,58,1,1.72,3.74

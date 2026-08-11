@@ -1,0 +1,8 @@
+department,total_admissions,readmissions,readmission_rate_pct
+ICU,91,29,31.87
+Cardiology,85,25,29.41
+Pulmonology,80,18,22.5
+Oncology,86,19,22.09
+Orthopedics,53,11,20.75
+General Medicine,248,43,17.34
+Neurology,49,8,16.33
